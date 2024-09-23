@@ -1,25 +1,41 @@
-import { fileURLToPath } from "url";
-import createJiti from "jiti";
+/** @type {import('next').NextConfig} */
 
-// Import env files to validate at build time. Use jiti so we can load .ts files in here.
-createJiti(fileURLToPath(import.meta.url))("./src/env");
+import path from 'path';
+import * as fs from 'fs';
+import { globSync } from 'glob';
 
-/** @type {import("next").NextConfig} */
-const config = {
-  reactStrictMode: true,
+const __dirname = path.resolve();
 
-  /** Enables hot reloading for local packages without a build step */
-  transpilePackages: [
-    "@acme/api",
-    "@acme/auth",
-    "@acme/db",
-    "@acme/ui",
-    "@acme/validators",
-  ],
-
-  /** We already do linting and typechecking as separate tasks in CI */
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
+const nextConfig = {
+  webpack: (config, { isServer }) => {
+    config.resolve.alias['@'] = path.resolve(process.cwd());
+    config.externals.push({
+      'node:crypto': 'commonjs crypto',
+    });
+    if (isServer) {
+      const zipSourcePath = path.join(__dirname, 'data/zips/US.txt');
+      const zipDestinationPath = path.join(__dirname, '.next', 'US.txt');
+      fs.copyFileSync(zipSourcePath, zipDestinationPath);
+      console.log(process.env);
+      console.log('MOCK_API', process.env.MOCK_API);
+      if (process.env.MOCK_API == 'true') {
+        const pattern = 'data/mockdata/**/*.json';
+        console.log({ pattern });
+        globSync(pattern, {
+          maxDepth: 10,
+        }).forEach((file) => {
+          console.log('Copying file: ', file);
+          const destination = path.join('.next', file.replace(path.join('data', 'mockdata'), 'mockdata'));
+          if (!fs.existsSync(path.dirname(destination))) {
+            fs.mkdirSync(path.dirname(destination), { recursive: true });
+          }
+          fs.copyFileSync(file, destination);
+        });
+      }
+    }
+    return config;
+  },
+  transpilePackages: ['lucide-react'],
 };
 
-export default config;
+export default nextConfig;
