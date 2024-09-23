@@ -50,7 +50,8 @@
     "AUTH_DISCORD_SECRET",
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
-    "PORT"
+    "PORT",
+    "ENV_1"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
@@ -58,6 +59,7 @@
     "VERCEL",
     "VERCEL_ENV",
     "VERCEL_URL",
-    "npm_lifecycle_event"
+    "npm_lifecycle_event",
+    "ENV_1"
   ]
 }
