@@ -50,9 +50,8 @@
     "AUTH_DISCORD_SECRET",
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
-    "PORT",
-    "ENV_1"
-  ],
+    "PORT"
+    ],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",
